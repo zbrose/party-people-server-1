@@ -5,16 +5,17 @@ const bcrypt = require('bcrypt')
 const db = require('../../models')
 const requiresToken = require('../requiresToken')
 const user = require('../../models/user')
+const event = require('../../models/event')
 
 // GET /users
-// router.get('/', async (req, res) => {
-//   try {
-//     const allUsers = await db.User.find()
-//     res.json( allUsers )
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })
+router.get('/', async (req, res) => {
+  try {
+    const allUsers = await db.User.find()
+    res.json( allUsers )
+  } catch(err) {
+    console.log(err)
+  }
+})
 
 // POST /users/register -- CREATE a new user
 router.post('/register', async  (req, res) => {

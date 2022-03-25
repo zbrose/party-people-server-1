@@ -4,8 +4,8 @@ const UserSchema = mongoose.Schema({
   name: String,
   email: String,
   password: String,
-  eventAttending: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
-  hostedEvents: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' }
+  eventsAttending: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
+  hostedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
 })
 
 
