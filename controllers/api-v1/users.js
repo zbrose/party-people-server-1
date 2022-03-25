@@ -6,6 +6,16 @@ const db = require('../../models')
 const requiresToken = require('../requiresToken')
 const user = require('../../models/user')
 
+// GET /users
+// router.get('/', async (req, res) => {
+//   try {
+//     const allUsers = await db.User.find()
+//     res.json( allUsers )
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })
+
 // POST /users/register -- CREATE a new user
 router.post('/register', async  (req, res) => {
   try {
