@@ -30,7 +30,7 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-// DELETE /users/:id
+// DELETE /users/:id // ****** NEED TO REMOVE USER FROM EVENTS ATTENDANCE LIST AND REMOVE THEM AS HOSTS
 router.delete('/:id', async (req, res) => {
   try{
     await db.User.findByIdAndDelete(req.params.id)
