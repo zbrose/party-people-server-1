@@ -41,9 +41,7 @@ router.delete("/:id", async (req, res) => {
 
     console.log("foundUser")
     await db.Event.updateMany(
-      // { attendees: { $gt: 0 } },
       { $pull: { attendees: req.params.id } },
-      // { multi: true }
     )
     db.Event.find()
       .exec()
