@@ -73,9 +73,71 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+// Once User clicks 'Attend' on event page
+router.put('/:eventId/:userId/attend', async (req, res) => {
+    try{
+        const foundUser = await db.User.findOne({
+            _id: req.params.userId
+        })  
+        const foundEvent = await db.Event.findOne({
+            _id: req.params.eventId
+        })  
+
+        foundEvent.attendees.push(foundUser.id)
+        foundUser.eventsAttending.push(foundEvent.id)
+
+        await foundEvent.save()
+        await foundUser.save()
+
+        res.json([foundUser, foundEvent])
+    } catch(err) {
+        console.log(err)
+    }
+})
+
+// Once User 
+router.put('/:eventId/:userId/unattend', async (req, res) => {
+    try{
+        const foundUser = await db.User.findOne({
+            _id: req.params.userId
+        })  
+        const foundEvent = await db.Event.findOne({
+            _id: req.params.eventId
+        })  
+
+        userIndex = foundEvent.attendees.indexOf(foundUser.id)
+        eventIndex = foundUser.eventsAttending.indexOf(foundEvent.id)
+        foundEvent.attendees.splice(userIndex, 1)
+        foundUser.eventsAttending.splice(eventIndex, 1)
+
+        await foundEvent.save()
+        await foundUser.save()
+
+        res.json([foundUser, foundEvent])
+    } catch(err) {
+        console.log(err)
+    }
+})
+
+
+router.delete('/:eventId/:userId/delete', async (req, res) => {
     try{
         // go through attendance list and deleting event ID from those users' eventsAttending array using their Ids to find them
+        foundEvent = await db.Event.findById(req.params.eventId)
+
+        // delete from attendee's eventsAttending array
+        for (const attendee of foundEvent.attendees) {
+            foundUser = await db.User.findById(attendee)
+            eventIndex = foundUser.eventsAttending.indexOf(foundEvent.id)
+            foundUser.eventsAttending.splice(eventIndex, 1)
+            await foundUser.save()
+        }
+
+        // delete from host's hostedEvents array
+        foundHost = await db.User.findById(req.params.userId)
+        eventIndex = foundHost.hostedEvents.indexOf(foundEvent.id)
+        foundHost.hostedEvents.splice(eventIndex, 1)
+        await foundHost.save()
 
         // delete event from database
         await db.Event.findByIdAndDelete(req.params.id)
@@ -85,5 +147,5 @@ router.delete('/:id', async (req, res) => {
         console.log(err)
     }
 })
-
+// 623e7f61f6f8c79867ce350b
 module.exports = router
