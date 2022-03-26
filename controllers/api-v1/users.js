@@ -39,30 +39,37 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
 
-    console.log("foundUser")
+    //pull id from events attendees
     await db.Event.updateMany(
       { $pull: { attendees: req.params.id } },
     )
-    db.Event.find()
-      .exec()
-      .then((events) => {
-        console.log("events ========")
-        console.log("user id", req.params.id)
-        console.log(events)
-      })
 
-    db.User.find()
-      .exec()
-      .then((users) => {
-        console.log("user ========")
-        console.log("user id", req.params.id)
-        console.log(users)
-      })
+    // db.Event.find()
+    //   .exec()
+    //   .then((events) => {
+    //     console.log("events ========")
+    //     console.log("user id", req.params.id)
+    //     console.log(events)
+    //   })
+
+    // db.User.find()
+    //   .exec()
+    //   .then((users) => {
+    //     console.log("user ========")
+    //     console.log("user id", req.params.id)
+    //     console.log(users)
+    //   })
+    
+    //delete user from host ids
+    await db.Event.deleteMany(
+      {  host: req.params.id }
+    )
 
     // delete user
     await db.User.findByIdAndDelete(req.params.id)
 
-    res.json("user deleted from attendees")
+    res.json("user deleted from attendees and host")
+
   } catch (err) {
     console.log(err)
   }
