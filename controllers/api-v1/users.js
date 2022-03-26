@@ -17,6 +17,29 @@ router.get('/', async (req, res) => {
   }
 })
 
+// PUT /users/:id
+router.put('/:id', async (req, res) => {
+  try{
+    const options = {new:true}
+    const updatedUser = await db.User.findOneAndUpdate({
+      _id: req.params.id
+    },req.body,options)
+    res.json(updatedUser)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
+// DELETE /users/:id
+router.delete('/:id', async (req, res) => {
+  try{
+    await db.User.findByIdAndDelete(req.params.id)
+    res.json('user deleted')
+  } catch(err) {
+    console.log(err)
+  }
+})
+
 // POST /users/register -- CREATE a new user
 router.post('/register', async  (req, res) => {
   try {
