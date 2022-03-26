@@ -6,6 +6,7 @@ const db = require("../../models")
 const requiresToken = require("../requiresToken")
 const user = require("../../models/user")
 const event = require("../../models/event")
+const { request } = require("express")
 
 // GET /users
 router.get("/", async (req, res) => {
@@ -38,27 +39,31 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
 
-    //go through eventsAttending array, get eventId, go to the event and delete userId from attendees array, save
-    foundUser = await db.User.findById(req.params.id)
-    for (const eventAttending of foundUser.eventsAttending) {
-      // console.log("eventsssssssssssss",eventAttend)
-      foundEvent = await db.Event.findById(eventAttending)
-      // console.log("foundevent!!", foundEvent)
-      eventIndex = foundEvent.attendees.indexOf(foundUser.id)
-      // console.log(eventIndex)
-      foundEvent.attendees.splice(eventIndex, 1)
-      await foundUser.save()
-    }
-    //go through user's hostedEvents list
-    //foreach hosted Events, get the eventId, and delete the hostId, save
+    console.log("foundUser")
+    await db.Event.updateMany(
+      // { attendees: { $gt: 0 } },
+      { $pull: { attendees: req.params.id } },
+      // { multi: true }
+    )
+    db.Event.find()
+      .exec()
+      .then((events) => {
+        console.log("events ========")
+        console.log("user id", req.params.id)
+        console.log(events)
+      })
 
-    // for (const hEvent of hostedEvents.hEvents) {
-    //   await db.Event.findByIdAndDelete(hEvent)
-    //   //cant make an event without a userId... which means we would just have to delete the event once the user is gone?
-    // }
+    db.User.find()
+      .exec()
+      .then((users) => {
+        console.log("user ========")
+        console.log("user id", req.params.id)
+        console.log(users)
+      })
 
-    //delete user
-    // await db.User.findByIdAndDelete(req.params.id)
+    // delete user
+    await db.User.findByIdAndDelete(req.params.id)
+
     res.json("user deleted from attendees")
   } catch (err) {
     console.log(err)
@@ -74,11 +79,9 @@ router.post("/register", async (req, res) => {
     })
 
     if (userCheck)
-      return res
-        .status(409)
-        .json({
-          msg: "did you forget that you already signed up w that email? 🧐",
-        })
+      return res.status(409).json({
+        msg: "did you forget that you already signed up w that email? 🧐",
+      })
 
     // hash the pass (could validate if we wanted)
     const salt = 12
