@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 // GET /events/:id
 router.get("/:id", async (req, res) => {
   try {
-    const foundEvent = await db.Event.findOne({ _id: req.params.id })
+    const foundEvent = await db.Event.findOne({ _id: req.params.id }).populate('host')
     res.json(foundEvent)
   } catch (err) {
     console.log(err)
