@@ -8,11 +8,34 @@ const user = require("../../models/user")
 const event = require("../../models/event")
 const { request } = require("express")
 
+require("dotenv").config()
+const path = require("path")
+const { unlinkSync } = require("fs")
+const multer = require("multer")
+const cloudinary = require("cloudinary").v2
+
+router.use(express.static("uploads"))
+
+// config for multer
+const uploads = multer({ dest: "uploads/" })
+
 // GET /users
 router.get("/", async (req, res) => {
   try {
     const allUsers = await db.User.find()
     res.json(allUsers)
+  } catch (err) {
+    console.log(err)
+  }
+})
+
+//GET /users/:id
+router.get("/:id", async (req, res) => {
+  try {
+    const userInfo = await db.User.findOne({
+      _id: req.params.id,
+    })
+    res.json(userInfo)
   } catch (err) {
     console.log(err)
   }
@@ -38,38 +61,16 @@ router.put("/:id", async (req, res) => {
 // DELETE /users/:id // ****** NEED TO REMOVE USER FROM EVENTS ATTENDANCE LIST AND REMOVE THEM AS HOSTS
 router.delete("/:id", async (req, res) => {
   try {
-
     //pull id from events attendees
-    await db.Event.updateMany(
-      { $pull: { attendees: req.params.id } },
-    )
+    await db.Event.updateMany({ $pull: { attendees: req.params.id } })
 
-    // db.Event.find()
-    //   .exec()
-    //   .then((events) => {
-    //     console.log("events ========")
-    //     console.log("user id", req.params.id)
-    //     console.log(events)
-    //   })
-
-    // db.User.find()
-    //   .exec()
-    //   .then((users) => {
-    //     console.log("user ========")
-    //     console.log("user id", req.params.id)
-    //     console.log(users)
-    //   })
-    
     //delete user from host ids
-    await db.Event.deleteMany(
-      {  host: req.params.id }
-    )
+    await db.Event.deleteMany({ host: req.params.id })
 
     // delete user
     await db.User.findByIdAndDelete(req.params.id)
 
     res.json("user deleted from attendees and host")
-
   } catch (err) {
     console.log(err)
   }
@@ -162,6 +163,28 @@ router.get("/auth-locked", requiresToken, (req, res) => {
   res.json({
     msg: "welcome to the auth locked route, congrats on geting thru the middleware 🎉",
   })
+})
+
+//PUT /images
+router.put("/:id/upload", uploads.single("image"), async (req, res) => {
+  if (!req.file) return res.status(400).json({ msg: "file didnt upload!" })
+  const cloudImageData = await cloudinary.uploader.upload(req.file.path)
+  console.log("CLOUIMAGEDAATTAAA", cloudImageData.url)
+  const cloudImg = `https://res.cloudinary.com/kokopuffz/image/upload/v1593119998/${cloudImageData.public_id}.png`
+
+  console.log("CLOUDIMG", cloudImg)
+
+  const options = { new: true }
+  const foundEvent = await db.User.findOneAndUpdate(
+    {
+      _id: req.params.id,
+    },
+    { $set: { image: cloudImg } },
+    options
+  )
+
+  res.json(foundEvent)
+  unlinkSync(req.file.path)
 })
 
 module.exports = router
