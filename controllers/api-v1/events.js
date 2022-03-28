@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 // GET /events/:id
 router.get("/:id", async (req, res) => {
   try {
-    const foundEvent = await db.Event.findOne({ _id: req.params.id }).populate('host')
+    const foundEvent = await db.Event.findOne({_id: req.params.id }).populate('host attendees').exec()
     res.json(foundEvent)
   } catch (err) {
     console.log(err)
@@ -102,17 +102,16 @@ router.put("/:eventId/:userId/attend", async (req, res) => {
 // Once User
 router.put("/:eventId/:userId/unattend", async (req, res) => {
   try {
-    const foundUser = await db.User.findOne({
-      _id: req.params.userId,
-    })
-    const foundEvent = await db.Event.findOne({
-      _id: req.params.eventId,
-    })
 
-    userIndex = foundEvent.attendees.indexOf(foundUser.id)
-    eventIndex = foundUser.eventsAttending.indexOf(foundEvent.id)
-    foundEvent.attendees.splice(userIndex, 1)
-    foundUser.eventsAttending.splice(eventIndex, 1)
+    await db.Event.findOneAndUpdate(
+        { _id: req.params.eventId },
+        { $pull: { attendees: req.params.userId } }
+    )
+
+    await db.User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { eventsAttending: req.params.eventId } }
+    )
 
     await foundEvent.save()
     await foundUser.save()
