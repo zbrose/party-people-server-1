@@ -29,6 +29,18 @@ router.get("/", async (req, res) => {
   }
 })
 
+//GET /users/:id
+router.get("/:id", async (req, res) => {
+  try {
+    const userInfo = await db.User.findOne({
+      _id: req.params.id,
+    })
+    res.json(userInfo)
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 // PUT /users/:id
 router.put("/:id", async (req, res) => {
   try {
@@ -174,6 +186,5 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
   res.json(foundEvent)
   unlinkSync(req.file.path)
 })
-
 
 module.exports = router
