@@ -10,6 +10,7 @@ const EventSchema = mongoose.Schema({
     description: String,
     category: String,
     image: String,
+    hype: Number,
     attendees:[{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     host: {type: mongoose.Schema.Types.ObjectId, ref:'User'}
   })
