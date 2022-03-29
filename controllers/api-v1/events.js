@@ -52,9 +52,11 @@ router.post("/create/:id", async (req, res) => {
       city: req.body.city,
       state: req.body.state,
       zipcode: req.body.zipcode,
+      time: req.body.time,
       date: req.body.date,
       description: req.body.description,
       category: req.body.category,
+      hype:1,
     })
 
     // // add user as host to the event
@@ -151,6 +153,22 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
     res.json(foundEvent)
     unlinkSync(req.file.path)
   })
+//update hype 
+
+router.put("/:eventId/hype", async (req, res) => {
+  try {
+    const foundEvent = await db.Event.findOne({
+      _id: req.params.eventId,
+    })
+
+    const updatedEvent = await db.Event.findOneAndUpdate(
+      { _id: req.params.eventId },
+      { hype: foundEvent.hype +1},)
+    res.json(updatedEvent)
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 //no need from user id
 router.delete("/:eventId", async (req, res) => {
