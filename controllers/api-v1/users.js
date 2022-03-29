@@ -170,12 +170,12 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: "file didnt upload!" })
   const cloudImageData = await cloudinary.uploader.upload(req.file.path)
   console.log("CLOUIMAGEDAATTAAA", cloudImageData.url)
-  const cloudImg = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/v1593119998/${cloudImageData.public_id}.png`
+  const cloudImg = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/w_300,h_300,c_fill/v1593119998/${cloudImageData.public_id}.png`
 
   console.log("CLOUDIMG", cloudImg)
 
   const options = { new: true }
-  const foundEvent = await db.User.findOneAndUpdate(
+  const foundUser = await db.User.findOneAndUpdate(
     {
       _id: req.params.id,
     },
@@ -183,7 +183,7 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
     options
   )
 
-  res.json(foundEvent)
+  res.json(foundUser)
   unlinkSync(req.file.path)
 })
 

@@ -5,6 +5,18 @@ const db = require("../../models")
 const requiresToken = require("../requiresToken")
 const user = require("../../models/user")
 const event = require("../../models/event")
+const { request } = require("express")
+
+require("dotenv").config()
+const path = require("path")
+const { unlinkSync } = require("fs")
+const multer = require("multer")
+const cloudinary = require("cloudinary").v2
+
+router.use(express.static("uploads"))
+
+// config for multer
+const uploads = multer({ dest: "uploads/" })
 
 // GET /events
 router.get("/", async (req, res) => {
@@ -54,7 +66,7 @@ router.post("/create/:id", async (req, res) => {
     await foundUser.save()
 
     res.json([foundUser, newEvent])
-  } catch (err) {
+  } catch (err) {g
     console.log(err)
     res.status(503).json({ msg: "oops server error 503 🔥😭" })
   }
@@ -118,6 +130,27 @@ router.put("/:eventId/:userId/unattend", async (req, res) => {
     console.log(err)
   }
 })
+
+router.put("/:id/upload", uploads.single("image"), async (req, res) => {
+    if (!req.file) return res.status(400).json({ msg: "file didnt upload!" })
+    const cloudImageData = await cloudinary.uploader.upload(req.file.path)
+    console.log("CLOUIMAGEDAATTAAA", cloudImageData.url)
+    const cloudImg = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/w_300,h_300,c_fill/v1593119998/${cloudImageData.public_id}.png`
+  
+    console.log("CLOUDIMG", cloudImg)
+  
+    const options = { new: true }
+    const foundEvent = await db.Event.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      { $set: { image: cloudImg } },
+      options
+    )
+  
+    res.json(foundEvent)
+    unlinkSync(req.file.path)
+  })
 
 //no need from user id
 router.delete("/:eventId", async (req, res) => {
