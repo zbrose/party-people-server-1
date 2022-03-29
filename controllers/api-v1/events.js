@@ -68,7 +68,7 @@ router.post("/create/:id", async (req, res) => {
     await foundUser.save()
 
     res.json([foundUser, newEvent])
-  } catch (err) {g
+  } catch (err) {
     console.log(err)
     res.status(503).json({ msg: "oops server error 503 🔥😭" })
   }

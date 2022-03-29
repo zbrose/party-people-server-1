@@ -147,6 +147,7 @@ router.post("/login", async (req, res) => {
     id: foundUser.id,
   }
 
+  console.log("PAYLOAD", payload)
   // sign the jwt
   const token = await jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: 60 * 60,
