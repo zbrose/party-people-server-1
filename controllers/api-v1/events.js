@@ -43,6 +43,7 @@ router.post("/create/:id", async (req, res) => {
       date: req.body.date,
       description: req.body.description,
       category: req.body.category,
+      hype:1,
     })
 
     // // add user as host to the event
@@ -114,6 +115,23 @@ router.put("/:eventId/:userId/unattend", async (req, res) => {
     )
 
     res.json([updatedUser, updatedEvent])
+  } catch (err) {
+    console.log(err)
+  }
+})
+
+//update hype 
+
+router.put("/:eventId/hype", async (req, res) => {
+  try {
+    const foundEvent = await db.Event.findOne({
+      _id: req.params.eventId,
+    })
+
+    const updatedEvent = await db.Event.findOneAndUpdate(
+      { _id: req.params.eventId },
+      { hype: foundEvent.hype +1},)
+    res.json(updatedEvent)
   } catch (err) {
     console.log(err)
   }
