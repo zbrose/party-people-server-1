@@ -103,20 +103,17 @@ router.put("/:eventId/:userId/attend", async (req, res) => {
 router.put("/:eventId/:userId/unattend", async (req, res) => {
   try {
 
-    await db.Event.findOneAndUpdate(
+    const updatedEvent = await db.Event.findOneAndUpdate(
         { _id: req.params.eventId },
         { $pull: { attendees: req.params.userId } }
     )
 
-    await db.User.findOneAndUpdate(
+    const updatedUser = await db.User.findOneAndUpdate(
         { _id: req.params.userId },
         { $pull: { eventsAttending: req.params.eventId } }
     )
 
-    await foundEvent.save()
-    await foundUser.save()
-
-    res.json([foundUser, foundEvent])
+    res.json([updatedUser, updatedEvent])
   } catch (err) {
     console.log(err)
   }
