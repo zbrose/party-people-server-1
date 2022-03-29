@@ -40,6 +40,7 @@ router.post("/create/:id", async (req, res) => {
       city: req.body.city,
       state: req.body.state,
       zipcode: req.body.zipcode,
+      time: req.body.time,
       date: req.body.date,
       description: req.body.description,
       category: req.body.category,
