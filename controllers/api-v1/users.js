@@ -175,7 +175,7 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
   console.log("CLOUDIMG", cloudImg)
 
   const options = { new: true }
-  const foundEvent = await db.User.findOneAndUpdate(
+  const foundUser = await db.User.findOneAndUpdate(
     {
       _id: req.params.id,
     },
@@ -183,7 +183,7 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
     options
   )
 
-  res.json(foundEvent)
+  res.json(foundUser)
   unlinkSync(req.file.path)
 })
 
