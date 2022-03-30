@@ -3,6 +3,7 @@ const db = require('../models')
 
 async function requiresToken(req, res, next) {
   try {
+    console.log('requiresToken===============================')
     // get token from the client
     const token = req.headers.authorization
 

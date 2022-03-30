@@ -29,9 +29,19 @@ router.get("/", async (req, res) => {
   }
 })
 
+// GET /users/auth-locked -- example of checking an jwt and not serving data unless the jwt is valid
+router.get("/auth-locked", requiresToken, (req, res) => {
+  // here we have acces to the user on the res.locals
+  console.log("logged in user", res.locals.user)
+  res.json({
+    msg: "welcome to the auth locked route, congrats on geting thru the middleware 🎉",
+  })
+})
+
 //GET /users/:id
 router.get("/:id", async (req, res) => {
   try {
+    console.log('GET WELLWELLWELL', req.params)
     const userInfo = await db.User.findOne({
       _id: req.params.id,
     })
@@ -157,14 +167,7 @@ router.post("/login", async (req, res) => {
   res.json({ token })
 })
 
-// GET /users/auth-locked -- example of checking an jwt and not serving data unless the jwt is valid
-router.get("/auth-locked", requiresToken, (req, res) => {
-  // here we have acces to the user on the res.locals
-  console.log("logged in user", res.locals.user)
-  res.json({
-    msg: "welcome to the auth locked route, congrats on geting thru the middleware 🎉",
-  })
-})
+
 
 //PUT /images
 router.put("/:id/upload", uploads.single("image"), async (req, res) => {
