@@ -44,7 +44,7 @@ router.get("/:id", async (req, res) => {
     console.log('GET WELLWELLWELL', req.params)
     const userInfo = await db.User.findOne({
       _id: req.params.id,
-    })
+    }).populate('hostedEvents eventsAttending')
     res.json(userInfo)
   } catch (err) {
     console.log(err)
