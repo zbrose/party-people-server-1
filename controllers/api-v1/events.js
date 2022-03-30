@@ -38,12 +38,13 @@ router.get("/:id", async (req, res) => {
   }
 })
 
-// POST /events/create -- CREATE a new event
-router.post("/create/:id", async (req, res) => {
+// POST /events-- CREATE a new event
+router.post("/", requiresToken, async (req, res) => {
   // USE TOKEN TO IDENTIFY USER
+  console.log("POST EVENTS")
   try {
     const foundUser = await db.User.findOne({
-      _id: req.params.id,
+      _id: res.locals.user._id,
     })
 
     const newEvent = await db.Event.create({
