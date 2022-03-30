@@ -138,7 +138,7 @@ router.put("/:id/upload", uploads.single("image"), async (req, res) => {
     if (!req.file) return res.status(400).json({ msg: "file didnt upload!" })
     const cloudImageData = await cloudinary.uploader.upload(req.file.path)
     console.log("CLOUIMAGEDAATTAAA", cloudImageData.url)
-    const cloudImg = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/w_300,h_300,c_fill/v1593119998/${cloudImageData.public_id}.png`
+    const cloudImg = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/w_1300,h_400,c_fill/v1593119998/${cloudImageData.public_id}.png`
   
     console.log("CLOUDIMG", cloudImg)
   
