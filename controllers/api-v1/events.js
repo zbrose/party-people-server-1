@@ -57,6 +57,7 @@ router.post("/", requiresToken, async (req, res) => {
       date: req.body.date,
       description: req.body.description,
       category: req.body.category,
+      image: "https://i.imgur.com/6TJdf3V.jpg",
       hype:1,
     })
 
